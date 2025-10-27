@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playwright Test Runner + Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif, Inter;
+      font-style: normal;
+      background: #fafafa;
+      padding: 20px;
+    }
+
+    .mainContainer {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid green;
+      background: #fff;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h2 {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background: #521ec9;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3f14a5;
+    }
+
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+
+    #output {
+      margin-top: 20px;
+      text-align: left;
+      white-space: pre-wrap;
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      line-height: 1.4;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .passed {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 30px;
+      margin: 10px 0;
+    }
+    .passed span {
+      color: green;
+    }
+
+    .failed span {
+      color: red;
+    }
+
+    .times p {
+      font-size: 12px;
+      margin: 2px 0;
+    }
+
+    .testcase p {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 30px;
+      margin: 10px 0 0 0;
+    }
+    .testcase span {
+      color: green;
+      font-size: 13px;
+    }
+
+    .reportcard {
+      margin: 10px 0;
+      border: 1.3px solid rgba(128, 128, 128, 0.4);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fff;
+      width: 100%;
+    }
+
+    .reportdata {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .reportdata:not(:last-child) {
+      border-bottom: 1px solid #ccc;
+    }
+
+    .reportdata p span {
+      color: #521ec9;
+    }
+
+    message {
+      margin-left: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .resultpassed {
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 30px;
+      margin: 10px 0;
+    }
+    .resultpassed span {
+      color: green;
+    }
+
+    .resultfailed span {
+      color: red;
+    }
+
+    .signature {
+      margin-top: 20px;
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .signature img {
+      width: 60%;
+      border-radius: 5px;
+    }
+
+    .signature-text {
+      font-size: 13px;
+      line-height: 20px;
+      flex: 1;
+    }
+
+    .signature-text strong {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="mainContainer">
+    <div class="header">
+      <img
+        src="https://honebi.com/static/media/HonebiLogo.854f8f1dfb5995a20033e52241e305e8.svg"
+        alt="Honebi"
+        width="20%"
+      />
+      <h2>Playwright Test Runner</h2>
+      <button id="runTestsBtn" onclick="runTests()">
+        <span id="buttonText">▶ Run Tests</span>
+        <span id="buttonLoading" class="loading hidden"></span>
+      </button>
+    </div>
+
+    <!-- Dynamic output goes here -->
+    <div id="output">Click "Run Tests" to start</div>
+
+    <!-- Dynamic report sections -->
+    <div id="summarySection" class="hidden">
+      <p id="summaryStatus" class="passed">Schedule <span>Passed</span></p>
+
+      <div class="times">
+       Schedule: <p  id="testStarted"><p  id="testStarted"></p></p>
+        <!-- <div class="reportdata"><p>Started</p><p id="testStarted">July 16, 2025, 12:01 PM</p></div> -->
+        <p id="projectName">Project:  </p>
+      </div>
+
+      <div class="testcase">
+        <p>Suite: All tests</p>
+        <span id="testsSummary">● 1 tests passed</span>
+      </div>
+
+      <div class="reportcard">
+        <div class="reportdata">
+          <p><span id="testNumber">#1</span> <span id="testName">Turtle - Full Login to Order Placed</span></p>
+          <message id="testResult">Success</message>
+        </div>
+        <div class="reportdata">
+          <p>Duration</p>
+          <p id="testDuration">22.4 sec</p>
+        </div>
+        <div class="reportdata">
+          <p>Profile</p>
+          <p id="testProfile">Niranjan</p>
+        </div>
+        <div class="reportdata">
+          <p>Method</p>
+          <p id="testMethod">Local</p>
+        </div>
+        <div class="reportdata">
+          <p>Screen</p>
+          <p id="testScreen">Desktop</p>
+        </div>
+        <div class="reportdata">
+          <p>Completed steps</p>
+          <p id="testSteps">1 of 10</p>
+        </div>
+      </div>
+
+      <div id="resultStatus" class="resultpassed">
+        <span>1 passed (22.4s)</span>
+      </div>
+
+      <div class="passed">Schedule details</div>
+
+      <div class="reportcard">
+        <div class="reportdata"><p>Failed tests</p><p id="failedTests">0</p></div>
+        <div class="reportdata"><p>Passed tests</p><p id="passedTests">1</p></div>
+        <div class="reportdata"><p>Tests retries</p><p id="testRetries">0</p></div>
+        <div class="reportdata"><p>Started</p><p id="testStarted">July 16, 2025, 12:01 PM</p></div>
+        <div class="reportdata"><p>Finished</p><p id="testFinished">July 16, 2025, 12:01 PM</p></div>
+        <div class="reportdata"><p>Timezone</p><p id="testTimezone">IND</p></div>
+      </div>
+    </div>
+<div class="reportdata">
+  <p>Screenshot</p>
+  <p id="testScreenshot">
+    <img src="./reports/Crm-rdp_&_Ecom_placed_order.png" alt="Screenshot" width="200" />
+  </p>
+</div>
+    <div class="signature">
+      <div class="signature-text">
+        <p>----------------------------------------------------------------------</p>
+        <p><strong>Best Regards,</strong></p>
+        <p>Niranjan Kumar Alamure</p>
+        <p>QA Automation Testing Team</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DOM elements
+    const runTestsBtn = document.getElementById('runTestsBtn');
+    const buttonText = document.getElementById('buttonText');
+    const buttonLoading = document.getElementById('buttonLoading');
+    const output = document.getElementById('output');
+    const summarySection = document.getElementById('summarySection');
+    
+    // Summary elements
+    const summaryStatus = document.getElementById('summaryStatus');
+    const projectName = document.getElementById('projectName');
+    const testsSummary = document.getElementById('testsSummary');
+    const testNumber = document.getElementById('testNumber');
+    const testName = document.getElementById('testName');
+    const testResult = document.getElementById('testResult');
+    const testDuration = document.getElementById('testDuration');
+    const testProfile = document.getElementById('testProfile');
+    const testMethod = document.getElementById('testMethod');
+    const testScreen = document.getElementById('testScreen');
+    const testSteps = document.getElementById('testSteps');
+    const resultStatus = document.getElementById('resultStatus');
+    const failedTests = document.getElementById('failedTests');
+    const passedTests = document.getElementById('passedTests');
+    const testRetries = document.getElementById('testRetries');
+    const testStarted = document.getElementById('testStarted');
+    const testFinished = document.getElementById('testFinished');
+    const testTimezone = document.getElementById('testTimezone');
+
+    async function runTests() {
+      // Disable button and show loading
+      runTestsBtn.disabled = true;
+      buttonText.classList.add('hidden');
+      buttonLoading.classList.remove('hidden');
+      output.innerText = "⏳ Running tests...";
+      
+      // Hide previous results
+      summarySection.classList.add('hidden');
+      
+      try {
+        const res = await fetch("/run-tests");
+        const text = await res.text();
+        
+        // Parse test results from the response
+        parseTestResults(text);
+        
+        // Display raw output
+        output.innerHTML = formatOutput(text);
+        
+        // Show the summary section with parsed data
+        summarySection.classList.remove('hidden');
+      } catch (err) {
+        output.innerText = "❌ Error running tests: " + err.message;
+        
+        // Update UI to show error state
+        summaryStatus.className = 'passed failed';
+        summaryStatus.innerHTML = 'Schedule <span>Failed</span>';
+        testResult.className = 'error';
+        testResult.innerText = 'Error';
+        resultStatus.className = 'resultpassed resultfailed';
+        resultStatus.innerHTML = '<span>0 passed, 1 failed</span>';
+        failedTests.innerText = '1';
+        passedTests.innerText = '0';
+        
+        // Show the summary section even on error
+        summarySection.classList.remove('hidden');
+      } finally {
+        // Re-enable button and hide loading
+        runTestsBtn.disabled = false;
+        buttonText.classList.remove('hidden');
+        buttonLoading.classList.add('hidden');
+      }
+    }
+
+    function formatOutput(text) {
+      let formattedText = text
+        .replace(/\[\d+m/g, '') 
+        .replace(/\n/g, '<br>') 
+        .replace(/✅/g, '<span style="color: green;">✅</span>')
+        .replace(/❌/g, '<span style="color: red;">❌</span>')
+        .replace(/⏳/g, '<span style="color: blue;">⏳</span>')
+        .replace(/✓/g, '<span style="color: green;">✓</span>')
+        .replace(/✗/g, '<span style="color: red;">✗</span>');
+      return formattedText;
+    }
+
+    function parseTestResults(text) {
+      const durationMatch = text.match(/(\d+\.\d+s)/);
+      if (durationMatch) {
+        testDuration.innerText = durationMatch[0];
+      }
+      
+      const passedMatch = text.match(/(\d+) passed/);
+      const failedMatch = text.match(/(\d+) failed/);
+      
+      if (passedMatch && parseInt(passedMatch[1]) > 0) {
+        summaryStatus.className = 'passed';
+        summaryStatus.innerHTML = 'Schedule <span>Passed</span>';
+        testResult.className = 'success';
+        testResult.innerText = 'Success';
+        resultStatus.className = 'resultpassed';
+        resultStatus.innerHTML = `<span>${passedMatch[0]}${failedMatch ? `, ${failedMatch[0]}` : ''}</span>`;
+      }
+      
+      if (failedMatch && parseInt(failedMatch[1]) > 0) {
+        summaryStatus.className = 'passed failed';
+        summaryStatus.innerHTML = 'Schedule <span>Failed</span>';
+        testResult.className = 'error';
+        testResult.innerText = 'Failed';
+        resultStatus.className = 'resultpassed resultfailed';
+        resultStatus.innerHTML = `<span>${passedMatch ? `${passedMatch[0]}, ` : ''}${failedMatch[0]}</span>`;
+      }
+      
+      if (passedMatch) passedTests.innerText = passedMatch[1];
+      if (failedMatch) failedTests.innerText = failedMatch[1];
+      
+      const testNameMatch = text.match(/› (.+?) \(\d+/);
+      if (testNameMatch && testNameMatch[1]) {
+        testName.innerText = testNameMatch[1];
+      }
+      
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      const timeStr = now.toLocaleDateString('en-US', options);
+      
+      testStarted.innerText = timeStr;
+      testFinished.innerText = timeStr;
+      testTimezone.innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    }
+    // Example: if JSON is available with screenshot path
+fetch('/reports/test-results.json')
+  .then(res => res.json())
+  .then(data => {
+    const lastTest = data[data.length - 1];
+    if (lastTest.screenshot) {
+      document.querySelector("#testScreenshot img").src = lastTest.screenshot;
+    }
+  });
+
+  </script>
+</body>
+</html>
