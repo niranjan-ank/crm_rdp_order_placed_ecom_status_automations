@@ -42,12 +42,7 @@ test('Crm-rdp & Ecom placed order', async ({ page }) => {
   await loginPage.login();
   await dashboardPage.OrdersView();
 
-  // await salesOrdersList('ORD10148');
-
-  // await dashboardPage.searchOrder('ORD10148');
-
   await verifyAndSearchOrder('ORD10148', page);
    await page.close();
-  // await page.pause();
 });
 
