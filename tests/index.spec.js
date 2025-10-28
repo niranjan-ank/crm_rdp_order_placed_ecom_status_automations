@@ -5,7 +5,6 @@ const path = require('path');
 const { DashboardPage } = require('../pages/dashboard');
 const { verifyAndSearchOrder } = require('../utils/crm_api/verifyAndSearchOrder');
 const { userLogin } = require('../utils/crm_api/login_api');
-const { salesOrderOneByCode } = require('../utils/crm_api/sales_orders_one');
 
 // test.afterEach(async ({ page }, testInfo) => {
 //   if (testInfo.status !== testInfo.expectedStatus) {
@@ -29,22 +28,26 @@ const { salesOrderOneByCode } = require('../utils/crm_api/sales_orders_one');
 //   }
 // });
 
-test('Crm-rdp & Ecom placed order', async ({ page }) => {
+test('CRM & Ecom Order Status Sync Test', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);
 
   const token = await userLogin();
-  await page.addInitScript((value) => {
-    window.localStorage.setItem('token', value);
-  }, token);
+  await page.addInitScript((value) => window.localStorage.setItem('token', value), token);
 
   await loginPage.navigateToLogin();
   await loginPage.login();
-  await dashboardPage.OrdersView();
-  await verifyAndSearchOrder('ORD10146', page);
-  await dashboardPage.OrderId('ORD10146');
-  await salesOrderOneByCode('ORD10146');
 
-   await page.close();
+  await dashboardPage.OrdersView();
+
+  const orderCode = 'ORD10159';
+  await verifyAndSearchOrder(orderCode, page);
+  await dashboardPage.OrderId(orderCode);
+
+  await dashboardPage.getOrdersChangeStatus();
+  await dashboardPage.processOrderStatusFlow(orderCode);
+  await page.waitForTimeout(2000);
+
+  await page.close();
 });
 

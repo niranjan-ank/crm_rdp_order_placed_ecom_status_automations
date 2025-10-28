@@ -15,8 +15,6 @@ async function salesOrderOneByCode(id = '') {
       payload,
       { headers }
     );
-
-    // console.log(`✅ Sales Order Detail for ID: ${id}`, response.data);
     return response.data;
 
   } catch (error) {

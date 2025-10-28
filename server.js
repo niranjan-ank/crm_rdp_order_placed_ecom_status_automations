@@ -16,7 +16,7 @@ app.get("/run-tests", (req, res) => {
   res.write("<pre>⏳ Running Playwright tests...\n</pre>");
 
   // ✅ Run the specific test file
-  const testProcess = spawn("npx", ["playwright", "test", "tests/index.spec.js --debug"], {
+  const testProcess = spawn("npx", ["playwright", "test", "tests/index.spec.js"], {
     cwd: __dirname,
     shell: true
   });

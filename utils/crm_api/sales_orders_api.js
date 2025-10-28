@@ -10,7 +10,6 @@ async function salesOrdersList(searchValue = "") {
     const token = await userLogin();
     const headers = Headers(token);
 
-    // Step 1: Call sales order list API
     const Sales_Orders_Payload = {
       ...Payload,
       search: {
@@ -32,7 +31,6 @@ async function salesOrdersList(searchValue = "") {
       return;
     }
 
-    // Step 2: Find the order by order code
     const matchedOrder = orders.find(order => order.code === searchValue);
 
     if (!matchedOrder) {
@@ -43,12 +41,11 @@ async function salesOrdersList(searchValue = "") {
     const orderId = matchedOrder.id;
     console.log(`✅ Found Order: ${searchValue} → ID: ${orderId}`);
 
-    // Step 3: Call Sales Order One API with the ID
     const orderDetails = await salesOrderOneByCode(orderId);
 
-    console.log("📦 Sales Order One Response:", orderDetails);
     return orderDetails;
 
+    
   } catch (error) {
     console.error("❌ Error fetching sales orders:", error.response?.data || error.message);
   }

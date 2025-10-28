@@ -9,7 +9,7 @@ async function verifyAndSearchOrder(orderId, page) {
   if (orderExists) {
     console.log(`✅ Order ${orderId} found. Proceeding with UI search...`);
     const dashboardPage = new DashboardPage(page);
-    await dashboardPage.searchOrder('ORD10148');
+    await dashboardPage.searchOrder('ORD10159');
   } else {
     console.error(`❌ Order ${orderId} not found in API. Skipping UI step.`);
   }
