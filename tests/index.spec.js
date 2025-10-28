@@ -5,6 +5,7 @@ const path = require('path');
 const { DashboardPage } = require('../pages/dashboard');
 const { verifyAndSearchOrder } = require('../utils/crm_api/verifyAndSearchOrder');
 const { userLogin } = require('../utils/crm_api/login_api');
+const { salesOrderOneByCode } = require('../utils/crm_api/sales_orders_one');
 
 // test.afterEach(async ({ page }, testInfo) => {
 //   if (testInfo.status !== testInfo.expectedStatus) {
@@ -40,8 +41,9 @@ test('Crm-rdp & Ecom placed order', async ({ page }) => {
   await loginPage.navigateToLogin();
   await loginPage.login();
   await dashboardPage.OrdersView();
-  await verifyAndSearchOrder('ORD10148', page);
-  await dashboardPage.OrderId('ORD10148')
+  await verifyAndSearchOrder('ORD10146', page);
+  await dashboardPage.OrderId('ORD10146');
+  await salesOrderOneByCode('ORD10146');
 
    await page.close();
 });

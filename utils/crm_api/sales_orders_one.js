@@ -1,32 +1,30 @@
 require('dotenv').config();
 const axios = require('axios');
 const crm = require('../../data/crmData');
-const { Headers, Payload } = require('./apiConfig');
+const { Headers } = require('./apiConfig');
 const { userLogin } = require('./login_api');
 
-async function salesOrderOne(Order_id='') {
+async function salesOrderOneByCode(id = '') {
   try {
     const token = await userLogin();
     const headers = Headers(token);
 
-    const Sales_Orders_Payload ={
-          ...Payload,
-                id: Order_id,
-    }
+    const payload = { id }; 
+    const response = await axios.post(
+      crm.CRM_SALES_ORDER_ONE_API,
+      payload,
+      { headers }
+    );
 
-    const response = await axios.post(crm.CRM_SALES_ORDER_API, Sales_Orders_Payload, { headers });
-
-    // Ruturn true if order is found, else false
-    const orders = response.data.data || [];
-    const orderFound = orders.some(orders => orders.code === searchValue);
-    return orderFound;
-
-    // console.log("✅ Sales Orders List Response:", response.data);
-
+    // console.log(`✅ Sales Order Detail for ID: ${id}`, response.data);
+    return response.data;
 
   } catch (error) {
-    console.error("❌ Error fetching sales orders:", error.response?.data || error.message);
+    console.error(
+      '❌ Error fetching specific sales order:',
+      error.response?.data || error.message
+    );
   }
 }
 
-module.exports = { salesOrderOne };
+module.exports = { salesOrderOneByCode };

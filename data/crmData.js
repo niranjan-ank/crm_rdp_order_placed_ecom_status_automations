@@ -7,6 +7,7 @@ const crm = {
   ADMIN_PASSWORD: process.env.CRM_PASSWORD,
   ORDERS_PAGE_URL :process.env.ORDER_PAGE_URL,
   CRM_SALES_ORDER_API :process.env.SALES_ORDER_API,
+  CRM_SALES_ORDER_ONE_API :process.env.SALES_ORDER_ONE_API,
 };
 
 module.exports = crm;
