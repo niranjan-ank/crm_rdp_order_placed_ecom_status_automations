@@ -40,7 +40,7 @@ test('CRM & Ecom Order Status Sync Test', async ({ page }) => {
 
   await dashboardPage.OrdersView();
 
-  const orderCode = 'ORD10159';
+  const orderCode = 'ORD10166';
   await verifyAndSearchOrder(orderCode, page);
   await dashboardPage.OrderId(orderCode);
 
