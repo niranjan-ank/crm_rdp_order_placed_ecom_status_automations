@@ -1,7 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
-const crm = require('../data/crmData');
-const { Headers, Payload } = require('../utils/apiConfig');
+const crm = require('../../data/crmData');
+const { Headers, Payload } = require('./apiConfig');
 const { userLogin } = require('./login_api');
 
 async function salesOrdersList(searchValue = "") {

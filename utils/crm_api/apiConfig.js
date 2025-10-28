@@ -20,9 +20,6 @@ const Payload = {
     source: "Honebi",
     search: {
         keys: ["code", "customer_mobile"],
-
-        
-        // value: ""
     }
 };
 

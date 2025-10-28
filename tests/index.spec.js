@@ -1,11 +1,10 @@
 const { test } = require('@playwright/test');
 const { LoginPage } = require('../pages/loginPage');
-const { userLogin } = require('../utils/login_api');
-const { salesOrdersList} = require('../utils/sales_orders_api');
 const fs = require('fs');
 const path = require('path');
 const { DashboardPage } = require('../pages/dashboard');
-const { verifyAndSearchOrder } = require('../utils/verifyAndSearchOrder');
+const { verifyAndSearchOrder } = require('../utils/crm_api/verifyAndSearchOrder');
+const { userLogin } = require('../utils/crm_api/login_api');
 
 // test.afterEach(async ({ page }, testInfo) => {
 //   if (testInfo.status !== testInfo.expectedStatus) {
@@ -41,8 +40,9 @@ test('Crm-rdp & Ecom placed order', async ({ page }) => {
   await loginPage.navigateToLogin();
   await loginPage.login();
   await dashboardPage.OrdersView();
-
   await verifyAndSearchOrder('ORD10148', page);
+  await dashboardPage.OrderId('ORD10148')
+
    await page.close();
 });
 

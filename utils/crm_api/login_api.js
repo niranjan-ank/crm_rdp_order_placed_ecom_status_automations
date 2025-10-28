@@ -1,6 +1,6 @@
 // pages/login_api.js
 const axios = require('axios');
-const crm = require('../data/crmData');
+const crm = require('../../data/crmData');
 
 async function userLogin() {
   try {

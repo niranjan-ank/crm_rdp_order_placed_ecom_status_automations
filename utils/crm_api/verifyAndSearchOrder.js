@@ -1,5 +1,5 @@
 const { salesOrdersList } = require('./sales_orders_api');
-const { DashboardPage } = require('../pages/dashboard');
+const { DashboardPage } = require('../../pages/dashboard');
 
 async function verifyAndSearchOrder(orderId, page) {
   // Step 1: Call the API
